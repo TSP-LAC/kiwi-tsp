@@ -16,7 +16,7 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         ports:
-        - "3306:3306"
+        - "${KIWI_DB_PORT}:3306"
 
     web:
         container_name: kiwi_web
@@ -25,8 +25,8 @@ services:
         restart: always
         image: pub.kiwitcms.eu/kiwitcms/kiwi:latest
         ports:
-            - 8080:8080
-            - 8443:8443
+            - ${KIWI_HTTP_PORT}:8080
+            - ${KIWI_HTTPS_PORT}:8443
         volumes:
             - uploads:/Kiwi/uploads:Z
             - ./tcms_settings_dir:/Kiwi/tcms_settings_dir:Z
