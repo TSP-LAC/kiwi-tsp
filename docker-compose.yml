@@ -11,10 +11,12 @@ services:
         restart: always
         environment:
             # checkov:skip=CKV_SECRET_6:Base64 High Entropy String
-            MYSQL_ROOT_PASSWORD: kiwi-1s-aw3s0m3
-            MYSQL_DATABASE: kiwi
-            MYSQL_USER: kiwi
-            MYSQL_PASSWORD: kiwi
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+        - "3306:3306"
 
     web:
         container_name: kiwi_web
@@ -23,32 +25,40 @@ services:
         restart: always
         image: pub.kiwitcms.eu/kiwitcms/kiwi:latest
         ports:
-            - 80:8080
-            - 443:8443
+            - 8080:8080
+            - 8443:8443
         volumes:
             - uploads:/Kiwi/uploads:Z
+            - ./tcms_settings_dir:/Kiwi/tcms_settings_dir:Z
         environment:
-            KIWI_DB_HOST: db
-            KIWI_DB_PORT: 3306
-            KIWI_DB_NAME: kiwi
-            KIWI_DB_USER: kiwi
-            KIWI_DB_PASSWORD: kiwi
+            KIWI_DB_HOST: ${KIWI_DB_HOST}
+            KIWI_DB_PORT: ${KIWI_DB_PORT}
+            KIWI_DB_NAME: ${KIWI_DB_NAME}
+            KIWI_DB_USER: ${KIWI_DB_USER}
+            KIWI_DB_PASSWORD: ${KIWI_DB_PASSWORD}
+            EMAIL_BACKEND: ${EMAIL_BACKEND}
+            EMAIL_HOST: ${EMAIL_HOST}
+            EMAIL_PORT: ${EMAIL_PORT}
+            EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+            EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+            EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+            DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
         cap_drop:
           - ALL
 
     # this is used only for testing purposes
     # Not needed for actual deployment!
-    proxy:
-        container_name: reverse_proxy
-        image: nginx
-        volumes:
-            - ./tests/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:Z
-            - ./tests/nginx-proxy/localhost.key:/etc/nginx/localhost.key:Z
-            - ./tests/nginx-proxy/localhost.crt:/etc/nginx/localhost.crt:Z
-        ports:
-            - 4343:8443
-        depends_on:
-            - web
+    # proxy:
+    #     container_name: reverse_proxy
+    #     image: nginx
+    #     volumes:
+    #         - ./tests/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:Z
+    #         - ./tests/nginx-proxy/localhost.key:/etc/nginx/localhost.key:Z
+    #         - ./tests/nginx-proxy/localhost.crt:/etc/nginx/localhost.crt:Z
+    #     ports:
+    #         - 4343:8443
+    #     depends_on:
+    #         - web
 
 volumes:
     db_data:
